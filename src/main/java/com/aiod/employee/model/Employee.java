@@ -13,7 +13,7 @@ public class Employee {
     private String empId;
 
     @NotBlank
-    @Size(max = 10)
+    @Size(max = 10,message = "Max length of employee 10 chars")
     private String name;
 
     private int age;
