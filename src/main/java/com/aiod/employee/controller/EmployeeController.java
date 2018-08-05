@@ -24,25 +24,25 @@ public class EmployeeController{
     @Autowired
     private EmployeeRepository employeeRepository;
 
-
+    @CrossOrigin
     @GetMapping("/employees")
     public Flux<Employee> getAllEmployee() {
         return employeeRepository.findAll();
     }
-
+    @CrossOrigin
     @PostMapping("/employees")
     public Mono<Employee> createEmployees(@Valid @RequestBody Employee employee) {
 
         return employeeRepository.save(employee);
     }
-
+    @CrossOrigin
     @GetMapping("/employees/{empId}")
     public Mono<ResponseEntity<Employee>> getEmployeeById(@PathVariable(value = "empId") String employeeId) {
         return employeeRepository.findById(employeeId)
                 .map(savedEmployee -> ResponseEntity.ok(savedEmployee))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
-
+    @CrossOrigin
     @PutMapping("/employees/{empId}")
     public Mono<ResponseEntity<Employee>> updateEmployee(@PathVariable(value = "empId") String employeeId,
                                                    @Valid @RequestBody Employee employee) {
@@ -54,6 +54,7 @@ public class EmployeeController{
                 .map(updateEmployee -> new ResponseEntity<>(updateEmployee, HttpStatus.OK))
                 .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    @CrossOrigin
     @DeleteMapping("/employees/{empId}")
     public Mono<ResponseEntity<Void>> deleteEmployee(@PathVariable(value = "empId") String EmployeeId) {
 
@@ -66,16 +67,17 @@ public class EmployeeController{
     }
 
     // Tweets are Sent to the client as Server Sent Events
+    @CrossOrigin
     @GetMapping(value = "/stream/employees", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Employee> streamAllEmployee() {
         return employeeRepository.findAll();
     }
-
+    @CrossOrigin
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity handleDuplicateKeyException(DuplicateKeyException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse("A Employee with the same id already exists"));
     }
-
+    @CrossOrigin
     @ExceptionHandler(EmployeeNotFoundException.class)
     public ResponseEntity handleEmployeeNotFoundException(EmployeeNotFoundException ex) {
         return ResponseEntity.notFound().build();
