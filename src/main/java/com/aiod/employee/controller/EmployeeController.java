@@ -1,6 +1,5 @@
 package com.aiod.employee.controller;
 
-
 import com.aiod.employee.repository.EmployeeRepository;
 import com.aiod.employee.exception.EmployeeNotFoundException;
 import com.aiod.employee.model.Employee;
@@ -16,10 +15,8 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 
-
-
 @RestController
-public class EmployeeController{
+public class EmployeeController {
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -29,40 +26,39 @@ public class EmployeeController{
     public Flux<Employee> getAllEmployee() {
         return employeeRepository.findAll();
     }
+
     @CrossOrigin
     @PostMapping("/employees")
     public Mono<Employee> createEmployees(@Valid @RequestBody Employee employee) {
 
         return employeeRepository.save(employee);
     }
+
     @CrossOrigin
-    @GetMapping("/employees/{empId}")
-    public Mono<ResponseEntity<Employee>> getEmployeeById(@PathVariable(value = "empId") String employeeId) {
-        return employeeRepository.findById(employeeId)
-                .map(savedEmployee -> ResponseEntity.ok(savedEmployee))
+    @GetMapping("/employees/{id}")
+    public Mono<ResponseEntity<Employee>> getEmployeeById(@PathVariable(value = "id") String id) {
+        return employeeRepository.findById(id).map(savedEmployee -> ResponseEntity.ok(savedEmployee))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
+
     @CrossOrigin
-    @PutMapping("/employees/{empId}")
-    public Mono<ResponseEntity<Employee>> updateEmployee(@PathVariable(value = "empId") String employeeId,
-                                                   @Valid @RequestBody Employee employee) {
-        return employeeRepository.findById(employeeId)
-                  .flatMap(existingEmployee -> {
+    @PutMapping("/employees/{id}")
+    public Mono<ResponseEntity<Employee>> updateEmployee(@PathVariable(value = "empId") String id,
+            @Valid @RequestBody Employee employee) {
+        return employeeRepository.findById(id).flatMap(existingEmployee -> {
             existingEmployee.setName(employee.getName());
             return employeeRepository.save(existingEmployee);
-        })
-                .map(updateEmployee -> new ResponseEntity<>(updateEmployee, HttpStatus.OK))
+        }).map(updateEmployee -> new ResponseEntity<>(updateEmployee, HttpStatus.OK))
                 .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-    @CrossOrigin
-    @DeleteMapping("/employees/{empId}")
-    public Mono<ResponseEntity<Void>> deleteEmployee(@PathVariable(value = "empId") String EmployeeId) {
 
-        return employeeRepository.findById(EmployeeId)
-                .flatMap(existingEmlpoyee ->
-                        employeeRepository.delete(existingEmlpoyee)
-                                .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK)))
-                )
+    @CrossOrigin
+    @DeleteMapping("/employees/{id}")
+    public Mono<ResponseEntity<Void>> deleteEmployee(@PathVariable(value = "id") String id) {
+
+        return employeeRepository.findById(id)
+                .flatMap(existingEmlpoyee -> employeeRepository.delete(existingEmlpoyee)
+                        .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK))))
                 .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
@@ -72,11 +68,14 @@ public class EmployeeController{
     public Flux<Employee> streamAllEmployee() {
         return employeeRepository.findAll();
     }
+
     @CrossOrigin
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity handleDuplicateKeyException(DuplicateKeyException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse("A Employee with the same id already exists"));
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("A Employee with the same id already exists"));
     }
+
     @CrossOrigin
     @ExceptionHandler(EmployeeNotFoundException.class)
     public ResponseEntity handleEmployeeNotFoundException(EmployeeNotFoundException ex) {

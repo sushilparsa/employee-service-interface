@@ -3,18 +3,31 @@ package com.aiod.employee.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+
 @Document(collection = "employees")
 public class Employee {
-    @Id
-    private String empId;
+    /**
+	 *
+	 */
+	
+	private static final String MAX_LENGTH_OF_EMPLOYEE_NAME_IS_20_CHARS = "Max length of employee name is 20 chars";
+
+	@Id
+    private String id;
 
     @NotBlank
-    @Size(max = 10,message = "Max length of employee 10 chars")
+    @Size(max = 20, message = MAX_LENGTH_OF_EMPLOYEE_NAME_IS_20_CHARS)
     private String name;
+    
+    @Min(value = 5, message = "Emp Id should not be less than 5")
+    @Max(value = 10, message = "Emp Id should not be greater than 10")
+    private Long empId;
 
     private int age;
     private String gender;
@@ -27,7 +40,7 @@ public class Employee {
 
     }
 
-    public Employee(String empId, String name, int age, String gender, int salary) {
+    public Employee(Long empId, String name, int age, String gender, int salary) {
         this.empId = empId;
         this.name = name;
         this.age = age;
@@ -35,11 +48,17 @@ public class Employee {
         this.salary = salary;
     }
 
-    public String getEmpid() {
+    /**
+     * @return the empId
+     */
+    public Long getEmpId() {
         return empId;
     }
 
-    public void setEid(String empId) {
+    /**
+     * @param empId the empId to set
+     */
+    public void setEmpId(Long empId) {
         this.empId = empId;
     }
 
